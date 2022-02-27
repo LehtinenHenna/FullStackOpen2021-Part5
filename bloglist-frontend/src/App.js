@@ -11,7 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('')   
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -43,9 +43,9 @@ const App = () => {
     setUsername('')      
     setPassword('')
     } catch (exception) {      
-      setErrorMessage('wrong credentials')      
+      setMessage('wrong credentials')      
       setTimeout(() => {        
-        setErrorMessage(null)      
+        setMessage(null)      
       }, 5000)    
     }  
   }
@@ -73,6 +73,14 @@ const App = () => {
         setNewAuthor('')
         setNewUrl('')
       })
+      if (blogObject.author !== '') {
+        setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`) 
+      } else {
+        setMessage(`a new blog ${blogObject.title} added`)
+      }     
+        setTimeout(() => {        
+          setMessage(null)      
+        }, 5000)
     } catch (exception) {
       console.error(exception)
     }
@@ -109,6 +117,7 @@ const App = () => {
       <div>
         <label>Title: </label>
         <input
+          required
           value={newTitle}
           onChange={({ target }) => setNewTitle(target.value)}
         />
@@ -123,6 +132,7 @@ const App = () => {
       <div>
         <label>URL: </label>
         <input
+          required
           type="url"
           value={newUrl}
           onChange={({ target }) => setNewUrl(target.value)}
@@ -136,7 +146,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <p>{errorMessage}</p>
+        <p>{message}</p>
         <h2>Log in to application</h2>
         {loginForm()}
       </div>
@@ -145,6 +155,7 @@ const App = () => {
   else {
     return (
       <div>
+        <p>{message}</p>
         <h2>blogs</h2>
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>
