@@ -5,7 +5,9 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
   const [username, setUsername] = useState('')   
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
@@ -57,17 +59,23 @@ const App = () => {
 
   const addBlog = (event) => {
     event.preventDefault()
-    const noteObject = {
-      content: newBlog,
-      date: new Date().toISOString(),
-      id: blogs.length + 1,
+    try {
+    const blogObject = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl,
     }
     blogService
-      .create(noteObject)
-      .then(returnedNote => {
-        setBlogs(blogs.concat(returnedNote))
-        setNewBlog('')
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewTitle('')
+        setNewAuthor('')
+        setNewUrl('')
       })
+    } catch (exception) {
+      console.error(exception)
+    }
   }
 
 
@@ -98,11 +106,29 @@ const App = () => {
 
   const blogForm = () => (
     <form onSubmit={addBlog}>
-      <input
-        value={newBlog}
-        onChange={({ target }) => setNewBlog(target.value)}
-      />
-      <button type="submit">save</button>
+      <div>
+        <label>Title: </label>
+        <input
+          value={newTitle}
+          onChange={({ target }) => setNewTitle(target.value)}
+        />
+      </div>
+      <div>
+        <label>Author: </label>
+        <input
+          value={newAuthor}
+          onChange={({ target }) => setNewAuthor(target.value)}
+        />
+      </div>
+      <div>
+        <label>URL: </label>
+        <input
+          type="url"
+          value={newUrl}
+          onChange={({ target }) => setNewUrl(target.value)}
+        />
+      </div>
+      <button type="submit">create</button>
     </form>  
   )
 
@@ -125,6 +151,8 @@ const App = () => {
           logout
         </button>
         <br></br>
+        <h2>create new</h2>
+        {blogForm()}
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
