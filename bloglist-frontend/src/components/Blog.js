@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const Blog = ({
-  blog, 
-  incrementLikes, 
-  removeBlog, 
+  blog,
+  incrementLikes,
+  removeBlog,
   user
 }) => {
   const [fullView, setFullView] = useState(false)
@@ -19,8 +19,8 @@ const Blog = ({
 
   return(
     <div style={blogStyle}>
-      {fullView 
-      ? <div>
+      {fullView
+        ? <div>
           <p>
             {blog.title}&nbsp;
             <button onClick={ () => setFullView(!fullView) }>{ fullView? 'hide' : 'show' }</button>
@@ -32,12 +32,12 @@ const Blog = ({
           </p>
           <p>{blog.url}</p>
           {user.id === blog.user.id || user.id === blog.user
-          ? <button onClick={removeBlog}>delete</button>
-          : <></>
+            ? <button onClick={removeBlog}>delete</button>
+            : <></>
           }
         </div>
 
-      : <div>
+        : <div>
           <p>
             {blog.title}&nbsp;
             {blog.author? 'by ' : ''}
@@ -46,7 +46,7 @@ const Blog = ({
           </p>
         </div>
       }
-    </div>  
+    </div>
   )
 }
 

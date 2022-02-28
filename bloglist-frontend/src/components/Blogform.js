@@ -2,7 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const BlogForm = ({ createBlog }) => {
-  const [newTitle, setNewTitle] = useState('') 
+  const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
 
@@ -47,9 +47,9 @@ const BlogForm = ({ createBlog }) => {
           />
         </div>
         <button type="submit">create</button>
-      </form> 
+      </form>
     </div>
-  ) 
+  )
 }
 
 BlogForm.propTypes = {
