@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 
-const Blog = ({blog, incrementLikes}) => {
+const Blog = ({
+  blog, 
+  incrementLikes, 
+  removeBlog, 
+  user
+}) => {
   const [fullView, setFullView] = useState(false)
 
   const blogStyle = {
@@ -25,6 +30,10 @@ const Blog = ({blog, incrementLikes}) => {
             <button onClick={incrementLikes}>like</button>
           </p>
           <p>{blog.url}</p>
+          {user.id === blog.user.id || user.id === blog.user
+          ? <button onClick={removeBlog}>delete</button>
+          : <></>
+          }
         </div>
 
       : <div>

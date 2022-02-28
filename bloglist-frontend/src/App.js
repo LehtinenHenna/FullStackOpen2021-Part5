@@ -5,6 +5,7 @@ import LoginForm from './components/Loginform'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -45,7 +46,10 @@ const App = () => {
       'loggedBlogappUser', JSON.stringify(user)      
     )
     blogService.setToken(user.token) 
-    setUser(user)      
+    setUser(user)
+    const users = await userService.getUsers()
+    const id = users.find(u => u.username === user.username).id // find the id by matching username
+    setUser({ ...user, id: id })
     setUsername('')      
     setPassword('')
     } catch (exception) {      
@@ -66,7 +70,7 @@ const App = () => {
   const incrementLikes = id => {
     const blog = blogs.find(b => b.id === id)
     const changedBlog = { ...blog, likes: blog.likes + 1 }
-  
+
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
@@ -112,6 +116,19 @@ const App = () => {
   }
 
 
+  const removeBlog = id => {
+    const blog = blogs.find(b => b.id === id)
+    const result = window.confirm(`Are you sure you want to delete blog ${blog.title}?`)
+    if (result) {
+      blogService
+        .remove(blog.id)
+        .then(returnedBlog => {
+          setBlogs(blogs.filter(b => b.id !== id))
+        })
+    }  
+  }
+
+
   if (user === null) {
     return (
       <div>
@@ -148,6 +165,8 @@ const App = () => {
           key={blog.id} 
           blog={blog}
           incrementLikes={() => incrementLikes(blog.id)}
+          removeBlog={() => removeBlog(blog.id)}
+          user={user}
           />
         )}
       </div>
