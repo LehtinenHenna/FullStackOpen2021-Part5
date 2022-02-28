@@ -16,7 +16,11 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs
+        .sort((a, b) => (a.likes > b.likes) // sort by number of likes
+        ? -1 : (a.likes === b.likes) // if number of likes is the same sort by title
+        ? ((a.title > b.title)
+        ? 1 : -1) : 1))
     )  
   }, [])
 
@@ -66,7 +70,11 @@ const App = () => {
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog)
+        .sort((a, b) => (a.likes > b.likes) // sort by number of likes
+        ? -1 : (a.likes === b.likes) // if number of likes is the same sort alphabetically by title
+        ? ((a.title > b.title)
+        ? 1 : -1) : 1))
       })
       .catch(error => {
         setMessage(
