@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/Blogform'
+import LoginForm from './components/Loginform'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [username, setUsername] = useState('')   
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
   }, [])
+
 
   useEffect(() => {    
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')    
@@ -57,21 +59,15 @@ const App = () => {
   }
 
 
-  const addBlog = (event) => {
-    event.preventDefault()
+  const blogFormRef = useRef()
+
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     try {
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-    }
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
       })
       if (blogObject.author !== '') {
         setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`) 
@@ -87,68 +83,19 @@ const App = () => {
   }
 
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-      </div>
-      <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-      </div>
-      <button type="submit">login</button>
-    </form>      
-  )
-
-
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        <label>Title: </label>
-        <input
-          required
-          value={newTitle}
-          onChange={({ target }) => setNewTitle(target.value)}
-        />
-      </div>
-      <div>
-        <label>Author: </label>
-        <input
-          value={newAuthor}
-          onChange={({ target }) => setNewAuthor(target.value)}
-        />
-      </div>
-      <div>
-        <label>URL: </label>
-        <input
-          required
-          type="url"
-          value={newUrl}
-          onChange={({ target }) => setNewUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>  
-  )
-
-
   if (user === null) {
     return (
       <div>
         <p>{message}</p>
+        <h1>Blogs</h1>
         <h2>Log in to application</h2>
-        {loginForm()}
+        <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleLogin={handleLogin}
+        />
       </div>
     )
   }
@@ -156,14 +103,17 @@ const App = () => {
     return (
       <div>
         <p>{message}</p>
-        <h2>blogs</h2>
+        <h1>Blogs</h1>
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>
           logout
         </button>
         <br></br>
-        <h2>create new</h2>
-        {blogForm()}
+        <div>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
+        </div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
