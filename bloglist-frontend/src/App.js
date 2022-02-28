@@ -69,8 +69,9 @@ const App = () => {
 
   const incrementLikes = id => {
     const blog = blogs.find(b => b.id === id)
+    // for some unimaginable reason when blog's like button is clicked for the first time blog.user contains the whole user object, 
+    // but if the like button is clicked again blog.user contains ONLY user id
     const changedBlog = { ...blog, likes: blog.likes + 1 }
-
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
